@@ -2,24 +2,15 @@ package main
 
 import (
 	"fmt"
+	san "github.com/iBatStat/extractor/sanitizer"
 	"log"
-
-	tes "github.com/otiai10/gosseract"
 )
 
 func main() {
-	fmt.Println("starting new client")
-	client, err := tes.NewClient()
+	stat, err := san.ExtractFeatures("7splusBattery.jpeg")
 	if err != nil {
 		log.Fatal(err)
-		return
+	} else {
+		fmt.Println(fmt.Sprintf("****** Extracted data is *********\n%v", *stat))
 	}
-
-	var out string
-	out, err = client.Src("/Users/adbhasin/Desktop/adi-iphone.jpeg").Out()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	fmt.Println(out)
 }
