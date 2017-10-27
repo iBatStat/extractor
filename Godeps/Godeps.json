@@ -1,0 +1,18 @@
+{
+	"ImportPath": "github.com/iBatStat/extractor",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/otiai10/gosseract",
+			"Rev": "1c3dfccf6d4fdb4447642ef287a541b7112fa95b"
+		},
+		{
+			"ImportPath": "github.com/otiai10/gosseract/tesseract",
+			"Rev": "1c3dfccf6d4fdb4447642ef287a541b7112fa95b"
+		}
+	]
+}
