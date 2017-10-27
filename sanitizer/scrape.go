@@ -1,8 +1,8 @@
 package sanitizer
 
 import (
-	//"github.com/iBatStat/extractor/model"
 	"fmt"
+	"github.com/iBatStat/extractor/model"
 	gotes "github.com/otiai10/gosseract"
 	"log"
 )
@@ -11,14 +11,6 @@ var (
 	ocr *gotes.Client
 )
 
-func testOCR(filePath string) {
-	out, err := ocr.Src(filePath).Out()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	fmt.Println(fmt.Sprintf("****** Extracted data is *********\n%s", out))
-}
 func init() {
 	var err error
 	ocr, err = gotes.NewClient()
@@ -27,6 +19,13 @@ func init() {
 		return
 	}
 }
-func ExtractFeatures(imgPath string) {
-	testOCR(imgPath)
+func ExtractFeatures(imgPath string) (*model.BatteryStats, error) {
+	out, err := ocr.Src(imgPath).Out()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	fmt.Println(fmt.Sprintf("****** Extracted data is *********\n%s", out))
+	//TO DO Use ocr to extract data nd the construct the BatterStats out of it
+	return &model.BatteryStats{}, nil
 }
