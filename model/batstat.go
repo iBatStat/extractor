@@ -5,6 +5,6 @@ import (
 )
 
 type BatteryStats struct {
-	Usage   time.Duration
-	Standby time.Duration
+	Usage   time.Duration `json:"Usage"`
+	Standby time.Duration `json:Standby`
 }
