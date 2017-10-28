@@ -11,3 +11,7 @@ Currently the following batter stats will be stored
 * Standby Time
 * IsFull charge or partial charge
 
+Dependency Management
+----
+
+the project no longer used Godep. Use Dep - https://github.com/golang/dep
