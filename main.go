@@ -11,6 +11,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		fmt.Println(fmt.Sprintf("****** Extracted data is *********\n%s", *stat))
+		fmt.Println(fmt.Sprintf("****** Structured data is *********\n%s", *stat))
 	}
 }

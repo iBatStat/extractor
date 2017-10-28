@@ -94,7 +94,7 @@ func ExtractFeatures(imgPath string) (*model.BatteryStats, error) {
 		log.Fatal(err)
 		return nil, err
 	}
-	fmt.Println(fmt.Sprintf("****** Extracted data is *********\n%s", out))
+	fmt.Println(fmt.Sprintf("****** Raw data is *********\n%s", out))
 	//TO DO Use ocr to extract data nd the construct the BatterStats out of it
 	usgdata, standbydur, err := extractBatteryTimes(out)
 	batStat := model.BatteryStats{}
