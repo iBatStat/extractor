@@ -42,4 +42,6 @@ func (d *mongoAccess) Push(batStat *model.BatteryStats) error {
 	return d.c.Insert(batStat)
 }
 
-func (d *mongoAccess) getStatsForUser(user string) interface{} { return nil }
+func (d *mongoAccess) GetUser(userEmail string) model.User {
+	return nil
+}
