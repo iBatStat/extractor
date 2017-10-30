@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+  version = "v3.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/otiai10/gosseract"
   packages = [".","tesseract"]
@@ -16,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "35bb75a6520edacd42da34b08fe64eeb27eafe2708b0e57c684cfac46f2e5555"
+  inputs-digest = "d7be18fc437ed89c53bc646e0ee717bc38b894abb302ef86dc79714d662b0c77"
   solver-name = "gps-cdcl"
   solver-version = 1
