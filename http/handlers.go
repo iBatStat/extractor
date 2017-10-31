@@ -24,9 +24,8 @@ func LoginHandlerFunc(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		var email = r.FormValue("email")
 		var password = r.FormValue("password")
-		var phoneModel = r.FormValue("phoneModel")
-		log.Printf("Recieved new user creating request for email %s and phoneModel %s", email, phoneModel)
-		var loginUser = model.User{email, password, phoneModel}
+		log.Printf("Recieved login request for email %s", email)
+		var loginUser = model.User{Email: email, Password: password}
 
 		// validate if useremail and password not nil
 
@@ -37,18 +36,20 @@ func LoginHandlerFunc(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// validate if the user exists in the db
+		log.Printf("Fetching user from DB %s", loginUser.Email)
 		existingUser := db.DBAccess.GetUser(loginUser.Email)
 		if existingUser == nil {
 			writeError(http.StatusBadRequest, errors.New(fmt.Sprintf("invalid user name and or password", loginUser.Email)), w, "")
 			return
 		}
-		err = bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(loginUser.Password))
+		log.Printf("Validating user password against DB - %s", loginUser.Email)
+		err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(loginUser.Password))
 		if err != nil {
 			writeError(http.StatusBadRequest, errors.New(fmt.Sprintf("invalid user name and or password", loginUser.Email)), w, "")
 			return
 
 		}
-
+		log.Printf("User %s authenticated. Generating token", loginUser.Email)
 		token, err := generateNew(loginUser.Email, loginUser.PhoneModel)
 		if err != nil {
 			writeError(http.StatusInternalServerError, err, w, "error logging in user")
