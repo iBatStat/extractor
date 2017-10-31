@@ -2,6 +2,7 @@ package db
 
 import (
 	"crypto/tls"
+	"log"
 	"net"
 
 	"github.com/iBatStat/extractor/model"
@@ -9,7 +10,8 @@ import (
 )
 
 type mongoAccess struct {
-	c *mgo.Collection
+	data  *mgo.Collection
+	users *mgo.Collection
 }
 
 var DBAccess = new(mongoAccess)
@@ -34,18 +36,28 @@ func (d *mongoAccess) Init(user, password string, hosts []string) error {
 	if err != nil {
 		return err
 	}
-	d.c = session.DB("istats").C("battery")
+	d.data = session.DB("istats").C("battery")
+	d.users = session.DB("istats").C("users")
 	return nil
 }
 
 func (d *mongoAccess) Push(batStat *model.BatteryStats) error {
-	return d.c.Insert(batStat)
+	return d.data.Insert(batStat)
 }
 
 func (d *mongoAccess) GetUser(userEmail string) *model.User {
-	return nil
+	var user model.User
+	err := d.users.Find(map[string]interface{}{"email": userEmail}).One(&user)
+	if err != nil {
+		log.Println(err)
+		return nil
+	} else {
+		return &user
+	}
+
 }
 
 func (d *mongoAccess) SaveUser(user model.User) error {
-	return nil
+	return d.users.Insert(user)
+
 }

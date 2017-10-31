@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/iBatStat/extractor/db"
@@ -20,13 +21,12 @@ func LoginHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	// verify encoded password
 	// if valid, return a token else unauthorised
 	if r.Method == "POST" {
-		var loginUser model.User
-
-		err := json.NewDecoder(r.Body).Decode(&loginUser)
-		if err != nil {
-			writeError(http.StatusInternalServerError, err, w, "error decoding body")
-			return
-		}
+		r.ParseForm()
+		var email = r.FormValue("email")
+		var password = r.FormValue("password")
+		var phoneModel = r.FormValue("phoneModel")
+		log.Printf("Recieved new user creating request for email %s and phoneModel %s", email, phoneModel)
+		var loginUser = model.User{email, password, phoneModel}
 
 		// validate if useremail and password not nil
 
@@ -64,27 +64,29 @@ func LoginHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AuthenticateHandlerFunc(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	if authenticate(r) {
-		next(w, r)
-		return
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+func AuthenticateHandlerFunc(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if authenticate(r) {
+			next.ServeHTTP(w, r)
+			return
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+	})
 }
 
 func NewUserHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	// encode the password and save it in db
 	// generate a token and return
 	if r.Method == "POST" {
-		var loginUser model.User
 
-		err := json.NewDecoder(r.Body).Decode(&loginUser)
-		if err != nil {
-			writeError(http.StatusInternalServerError, err, w, "error decoding body")
-			return
-		}
+		r.ParseForm()
+		var email = r.FormValue("email")
+		var password = r.FormValue("password")
+		var phoneModel = r.FormValue("phoneModel")
+		log.Printf("Recieved new user creating request for email %s and phoneModel %s", email, phoneModel)
+		var loginUser = model.User{email, password, phoneModel}
 
 		// validate if useremail and password not nil
 
@@ -93,15 +95,18 @@ func NewUserHandlerFunc(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("UserEmail and Password mandatory"))
 			return
 		}
-
+		log.Printf("checking if user %s already exists", loginUser.Email)
 		// validate if the user exists in the db
 		existingUser := db.DBAccess.GetUser(loginUser.Email)
+
 		if existingUser != nil {
 			writeError(http.StatusBadRequest, errors.New(fmt.Sprintf("user %s already exists", loginUser.Email)), w, "")
 			return
 		}
 
-		dbpass, err := bcrypt.GenerateFromPassword([]byte(loginUser.Password), 21)
+		log.Printf("Encoding user %s password", loginUser.Email)
+		dbpass, err := bcrypt.GenerateFromPassword([]byte(loginUser.Password), 7)
+		log.Printf("Saving user %s to DB", loginUser.Email)
 		if err != nil {
 			writeError(http.StatusInternalServerError, err, w, "error creating new  user")
 			return
@@ -112,7 +117,7 @@ func NewUserHandlerFunc(w http.ResponseWriter, r *http.Request) {
 			writeError(http.StatusInternalServerError, err, w, "error creating new user")
 			return
 		}
-
+		log.Printf("User %s saved to db. Generating token", loginUser.Email)
 		token, err := generateNew(loginUser.Email, loginUser.PhoneModel)
 		if err != nil {
 			writeError(http.StatusInternalServerError, err, w, "error logging in user")
