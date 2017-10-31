@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/iBatStat/extractor/db"
-	san "github.com/iBatStat/extractor/sanitizer"
+	myHttp "github.com/iBatStat/extractor/http"
 )
 
 func main() {
@@ -25,11 +25,23 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	stat, err := san.ExtractFeatures("7splusBattery.jpeg")
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		db.DBAccess.Push(stat)
-		fmt.Println(fmt.Sprintf("****** Structured data is *********\n%s", *stat))
-	}
+
+	// start a http server and add all the relevant handlers
+
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("yes monkey boy"))
+	})
+	http.Handle("/login", http.HandlerFunc(myHttp.LoginHandlerFunc))
+	http.Handle("/newUser", http.HandlerFunc(myHttp.NewUserHandlerFunc))
+	http.Handle("/uploadStat", myHttp.AuthenticateHandlerFunc(http.HandlerFunc(myHttp.UploadImageHandlerFunc)))
+
+	log.Println("starting server")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+	//	stat, err := san.ExtractFeatures("7splusBattery.jpeg")
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	} else {
+	//		db.DBAccess.Push(stat)
+	//		fmt.Println(fmt.Sprintf("****** Structured data is *********\n%s", *stat))
+	//	}
 }

@@ -2,10 +2,22 @@
 
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+  version = "v3.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/otiai10/gosseract"
   packages = [".","tesseract"]
   revision = "1c3dfccf6d4fdb4447642ef287a541b7112fa95b"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["bcrypt","blowfish"]
+  revision = "2509b142fb2b797aa7587dad548f113b2c0f20ce"
 
 [[projects]]
   branch = "v2"
@@ -16,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "35bb75a6520edacd42da34b08fe64eeb27eafe2708b0e57c684cfac46f2e5555"
+  inputs-digest = "5fb9f4299e4779b445308da93d0e9981e7f0e54fd24bc440ce4d9edd156bddb1"
   solver-name = "gps-cdcl"
   solver-version = 1
