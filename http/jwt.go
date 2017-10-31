@@ -7,6 +7,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
 )
 
 var (
@@ -14,8 +15,8 @@ var (
 )
 
 func init() {
-	privateKey, _ := ioutil.ReadFile(os.Getenv("JWT_PRIVATE_KEY"))
-	publicKey, _ := ioutil.ReadFile(os.Getenv("JWT_PUBLIC_KEY"))
+	privateKey, _ = ioutil.ReadFile(os.Getenv("JWT_PRIVATE_KEY"))
+	publicKey, _ = ioutil.ReadFile(os.Getenv("JWT_PUBLIC_KEY"))
 }
 
 // we need functions that do the following
@@ -27,15 +28,15 @@ func init() {
 // 2. authenticate a jwt on a http reqeust
 // 3. possibly we want to re-validate a jwt with expire at extended
 
-func generateNew(userId, phoneType) (string, error) {
+func generateNew(userId, phoneType string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user":      userId,
 		"phoneType": phoneType,
 		"exp":       time.Now().Add(1 * time.Hour),
 	})
-	tokenstr, err := jwt.SignedString(privateKey)
+	tokenstr, err := token.SignedString(privateKey)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	return tokenstr, nil
 }
@@ -43,7 +44,7 @@ func generateNew(userId, phoneType) (string, error) {
 func authenticate(r *http.Request) bool {
 	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor,
 		func(token *jwt.Token) (interface{}, error) {
-			return verifyKey, nil
+			return publicKey, nil
 		})
 	if err != nil {
 		return false
