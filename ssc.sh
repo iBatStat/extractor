@@ -1,4 +1,4 @@
-!#/binsh
+#!/bin/sh
 cd /etc/ssl/
 openssl req -newkey rsa:2048 -new -x509 -days 365 -nodes -out mongodb-cert.crt -keyout mongodb-cert.key
  
