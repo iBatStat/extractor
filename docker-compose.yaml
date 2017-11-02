@@ -1,0 +1,14 @@
+mongo-container:
+  image: mongo:3.4.2
+  environment:
+      # provide your credentials here
+      - MONGO_INITDB_ROOT_USERNAME=ibat
+      - MONGO_INITDB_ROOT_PASSWORD=BatInC@vE
+  ports:
+    - "27017:27017"
+  volumes:
+      # if you wish to setup additional user accounts specific per DB or with different roles you can use following entry point
+    - "$PWD/statstore/:/docker-entrypoint-initdb.d/"
+    - "$PWD/security/:/docker-entrypoint-initdb.d/"
+  # no --auth is needed here as presence of username and password add this option automatically
+  command: mongod --sslPEMKeyFile /docker-entrypoint-initdb.d/mongodb.pem --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
